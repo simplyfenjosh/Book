@@ -17,7 +17,7 @@ function loadBooks() {
 }
 
 function saveBooks(books) {
-  fs.writeSyncFile(FILE, JSON, stringify(books, null, 2));
+  fs.writeFileSync(FILE, JSON.stringify(books, null, 2));
 }
 
 // constructor
@@ -50,7 +50,7 @@ function addBook(title, author, genre, pages) {
     return;
   }
   
-  const book = new book(title, author, genre.toLowerCase(), pages);
+  const book = new Book(title, author, genre.toLowerCase(), pages);
   books.push(book);
   console.log(`Added: "${book.title}" By: ${book.author} [${book.genre}] (${book.id})`);
 }
@@ -163,3 +163,32 @@ function showStats() {
       node app.js help
     `);
   }
+  
+  //Argument Parsing
+  const args = process.argv.slice(2);
+  const command = args[0];
+  
+  switch(command) {
+    case 'add':
+      addBook(args[1], args[2], args[3], args[4]);
+      break;
+    case 'delete':
+      deleteBook(Number(args[1]));
+      break;
+    case 'status':
+      updateStatus(Number(args[1]), args[2]);
+      break;
+    case 'list':
+      listBooks(args[1], args[2]);
+      break;
+    case 'stats':
+      showStats();
+      break;
+    case 'help':
+      showHelp();
+      break;
+    default:
+    console.log(`Unknown command: ${command || '(none)'}`);
+    showHelp();
+  }
+  saveBooks(books);
