@@ -18,7 +18,7 @@ function loadData() {
 }
 
 function saveData(data) {
-  fs.writeFileSync(FILE, JSON.stringify(date, null, 2));
+  fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
 }
 
 //------Constructor------
@@ -153,3 +153,88 @@ function logWorkOut(id, weight, reps, sets) {
     console.log(`Total sets: ${totalSets}`);
     console.log(`Total Volume: ${totalVolume}Kg`);
   }
+  
+  function listExercises() {
+    if (exercises.length === 0) {
+      console.log('No exercises added yet.');
+      return;
+    }
+    
+    console.log(`\n${'ID'.padEnd(14)} ${'Name'.padEnd(22)} ${'Category'.padEnd(12)} ${'Logs'.padEnd(6)} ${'PR (kg)'.padEnd(10)}`);
+  console.log('-'.repeat(65));
+  
+  exercises.forEach(ex => {
+    const pr = ex.logs.length > 0 ? Math.max(...ex.logs.map(l => l.weight)) : '-';
+    console.log(
+      `${String(ex.id).padEnd(14)} ` +
+      `${ex.name.slice(0, 20).padEnd(22)} ` +
+      `${ex.category.padEnd(12)} ` +
+      `${String(ex.logs.length).padEnd(6)} ` +
+      `${String(pr).padEnd(10)}`
+    );
+  });
+}
+
+  function deleteExercise(id) {
+    const before = exercise.length;
+    exercises = exercise.filter(e => e.id !== id);
+    if (exercise.length < before) {
+      console.log(`Deleted exercise ${id}`);
+    } else {
+      console.log(`No exercise found with id: ${id}`);
+    }
+  }
+  
+  function showHelp() {
+    console.log(`
+    Work out Tracker 
+    
+    Usage:
+    node app.js add "<name>" <category>
+    node app.js log <exercise-id> <weight> <reps> [sets]
+    node app.js history <exercise-id>
+    node app.js pr <exercise-id>
+    node app.js volume [YYYY-MM-DD]
+    node app.js list
+    node app.js delete <exercise-id>
+    node app.js help
+    `);
+  }
+  
+  // ─── ARGUMENT PARSING ───
+const args = process.argv.slice(2);
+const command = args[0];
+
+switch (command) {
+  case 'add':
+    addExercise(args[1], args[2]);
+    break;
+  case 'log':
+    logWorkout(Number(args[1]), args[2], args[3], args[4]);
+    break;
+  case 'history':
+    showHistory(Number(args[1]));
+    break;
+  case 'pr':
+    showPR(Number(args[1]));
+    break;
+  case 'volume':
+    showVolume(args[1]);
+    break;
+  case 'list':
+    listExercises();
+    break;
+  case 'delete':
+    deleteExercise(Number(args[1]));
+    break;
+  case 'help':
+    showHelp();
+    break;
+  default:
+    console.log(`Unknown command: ${command || '(none)'}`);
+    showHelp();
+}
+
+saveData(exercises);
+
+  
