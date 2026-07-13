@@ -1,5 +1,5 @@
 const fs = require('fs');
-const FILE = 'workouts.js';
+const FILE = 'workouts.json';
 
 //____Persistance_____
 function loadData() {
